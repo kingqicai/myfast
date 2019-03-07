@@ -1,0 +1,4 @@
+gensim
+tensorboardX
+cytoolz
+pyrouge
