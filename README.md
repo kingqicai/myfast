@@ -156,3 +156,6 @@ After the training finishes you will be able to run the decoding and evaluation 
 The above will use the best hyper-parameters we used in the paper as default.
 Please refer to the respective source code for options to set the hyper-parameters.
 
+##my updates
+1. replace word2vec encode with bert encode
+
