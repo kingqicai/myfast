@@ -139,7 +139,9 @@ class BasicTrainer(object):
         self._pipeline = pipeline
         self._save_dir = save_dir
         self._logger = tensorboardX.SummaryWriter(join(save_dir, 'log'))
-        os.makedirs(join(save_dir, 'ckpt'))
+        cur_path = join(save_dir, 'ckpt')
+        if not os.path.exists(cur_path):
+            os.makedirs(cur_path)
 
         self._ckpt_freq = ckpt_freq
         self._patience = patience

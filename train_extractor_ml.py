@@ -58,9 +58,10 @@ def build_batchers(net_type, word2id, cuda, debug):
                    else batchify_fn_extract_ptr)
     convert_batch = (convert_batch_extract_ff if net_type == 'ff'
                      else convert_batch_extract_ptr)
+    #组合函数
     batchify = compose(batchify_fn(PAD, cuda=cuda),
                        convert_batch(UNK, word2id))
-
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
     train_loader = DataLoader(
         ExtractDataset('train'), batch_size=BUCKET_SIZE,
         shuffle=not debug,
@@ -124,23 +125,30 @@ def main(args):
     assert args.net_type in ['ff', 'rnn']
     # create data batcher, vocabulary
     # batcher
-    with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
-        wc = pkl.load(f)
-    word2id = make_vocab(wc, args.vsize)
+    with open(join(DATA_DIR, 'vocab.txt'), 'r') as f:
+        #wc = pkl.load(f)
+        vocab_words = [w.replace('\n','') for w in f.readlines()]
+    vocab_ids = list(range(len(vocab_words)))
+    word2id = dict(zip(vocab_words,vocab_ids))
+    id2word = dict(zip(vocab_ids,vocab_words))
+
+    #get 30K vocab wordid
+    #word2id = make_vocab(wc, args.vsize)
+    #construct batcher of train and val set
     train_batcher, val_batcher = build_batchers(args.net_type, word2id,
                                                 args.cuda, args.debug)
 
     # make net
-    print("type:"+args.net_type)
-    print(args)
+    #net is PtrExtrationSumm model
     net, net_args = configure_net(args.net_type,
                                   len(word2id), args.emb_dim, args.conv_hidden,
                                   args.lstm_hidden, args.lstm_layer, args.bi)
+    
     if args.w2v:
         # NOTE: the pretrained embedding having the same dimension
         #       as args.emb_dim should already be trained
-        embedding, _ = make_embedding(
-            {i: w for w, i in word2id.items()}, args.w2v)
+        embedding, _ = make_embedding(id2word, args.w2v)
+        print(embedding)
         net.set_embedding(embedding)
 
     # configure training setting
@@ -178,6 +186,7 @@ def main(args):
 
     print('start training with the following hyper-parameters:')
     print(meta)
+    
     trainer.train()
 
 
@@ -190,9 +199,9 @@ if __name__ == '__main__':
     # model options
     parser.add_argument('--net-type', action='store', default='rnn',
                         help='model type of the extractor (ff/rnn)')
-    parser.add_argument('--vsize', type=int, action='store', default=30000,
+    parser.add_argument('--vsize', type=int, action='store', default=30522,
                         help='vocabulary size')
-    parser.add_argument('--emb_dim', type=int, action='store', default=128,
+    parser.add_argument('--emb_dim', type=int, action='store', default=768,
                         help='the dimension of word embedding')
     parser.add_argument('--w2v', action='store',
                         help='use pretrained word2vec embedding')

@@ -30,6 +30,7 @@ def get_extract_label(art_sents, abs_sents):
     for abst in abs_sents:
         rouges = list(map(compute_rouge_l(reference=abst, mode='r'),
                           art_sents))
+        #rouge[i]最大的索引
         ext = max(indices, key=lambda i: rouges[i])
         indices.remove(ext)
         extracted.append(ext)
@@ -52,6 +53,8 @@ def process(split, i):
         extracted, scores = [], []
     data['extracted'] = extracted
     data['score'] = scores
+    print(data)
+    print('\n')
     with open(join(data_dir, '{}.json'.format(i)), 'w') as f:
         json.dump(data, f, indent=4)
 

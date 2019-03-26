@@ -33,6 +33,8 @@ class ConvSentEncoder(nn.Module):
 
     def set_embedding(self, embedding):
         """embedding is the weight matrix"""
+        print(self._embedding.weight.size())
+        print(embedding.size())
         assert self._embedding.weight.size() == embedding.size()
         self._embedding.weight.data.copy_(embedding)
 

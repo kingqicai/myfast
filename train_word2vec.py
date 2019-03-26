@@ -23,11 +23,14 @@ class Sentences(object):
     def __init__(self):
         self._path = join(DATA_DIR, 'train')
         self._n_data = count_data(self._path)
+        print(self._n_data)
 
+    #迭代方法，实现了__iter__的类，可以直接用于循环
     def __iter__(self):
         for i in range(self._n_data):
             with open(join(self._path, '{}.json'.format(i))) as f:
                 data = json.loads(f.read())
+            #concatv 拼接迭代
             for s in concatv(data['article'], data['abstract']):
                 yield ['<s>'] + s.lower().split() + [r'<\s>']
 
@@ -41,6 +44,7 @@ def main(args):
         os.makedirs(save_dir)
 
     sentences = Sentences()
+    print(sentences)
     model = gensim.models.Word2Vec(
         size=args.dim, min_count=5, workers=16, sg=1)
     model.build_vocab(sentences)

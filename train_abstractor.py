@@ -112,9 +112,13 @@ def build_batchers(word2id, cuda, debug):
 def main(args):
     # create data batcher, vocabulary
     # batcher
-    with open(join(DATA_DIR, 'vocab_cnt.pkl'), 'rb') as f:
-        wc = pkl.load(f)
-    word2id = make_vocab(wc, args.vsize)
+    with open(join(DATA_DIR, 'vocab.txt'), 'r') as f:
+        #wc = pkl.load(f)
+        vocab_words = [w.replace('\n','') for w in f.readlines()]
+    vocab_ids = list(range(len(vocab_words)))
+    word2id = dict(zip(vocab_words,vocab_ids))
+    id2word = dict(zip(vocab_ids,vocab_words))
+
     train_batcher, val_batcher = build_batchers(word2id,
                                                 args.cuda, args.debug)
 
@@ -124,8 +128,7 @@ def main(args):
     if args.w2v:
         # NOTE: the pretrained embedding having the same dimension
         #       as args.emb_dim should already be trained
-        embedding, _ = make_embedding(
-            {i: w for w, i in word2id.items()}, args.w2v)
+        embedding, _ = make_embedding(id2word, args.w2v)
         net.set_embedding(embedding)
 
     # configure training setting
@@ -173,9 +176,9 @@ if __name__ == '__main__':
     parser.add_argument('--path', required=True, help='root of the model')
 
 
-    parser.add_argument('--vsize', type=int, action='store', default=30000,
+    parser.add_argument('--vsize', type=int, action='store', default=30522,
                         help='vocabulary size')
-    parser.add_argument('--emb_dim', type=int, action='store', default=128,
+    parser.add_argument('--emb_dim', type=int, action='store', default=768,
                         help='the dimension of word embedding')
     parser.add_argument('--w2v', action='store',
                         help='use pretrained word2vec embedding')
