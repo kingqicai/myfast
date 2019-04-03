@@ -8,6 +8,7 @@ from cytoolz import curried
 
 import torch
 import torch.multiprocessing as mp
+import os
 
 
 # Batching functions
@@ -29,9 +30,11 @@ def coll_fn_extract(data):
     assert all(map(is_good_data, batch))
     return batch
 
+#partial evaluation
 @curry
 def tokenize(max_len, texts):
-    return [t.lower().split()[:max_len] for t in texts]
+    ret = [t.lower().split()[:max_len] for t in texts]
+    return ret
 
 def conver2id(unk, word2id, words_list):
     word2id = defaultdict(lambda: unk, word2id)

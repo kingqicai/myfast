@@ -35,6 +35,7 @@ try:
 except KeyError:
     print('please use environment variable to specify data directories')
 
+
 class ExtractDataset(CnnDmDataset):
     """ article sentences -> extraction indices
     (dataset created by greedily matching ROUGE)
@@ -50,6 +51,7 @@ class ExtractDataset(CnnDmDataset):
 
 def build_batchers(net_type, word2id, cuda, debug):
     assert net_type in ['ff', 'rnn']
+    #pre-process 
     prepro = prepro_fn_extract(args.max_word, args.max_sent)
     def sort_key(sample):
         src_sents, _ = sample
@@ -148,7 +150,6 @@ def main(args):
         # NOTE: the pretrained embedding having the same dimension
         #       as args.emb_dim should already be trained
         embedding, _ = make_embedding(id2word, args.w2v)
-        print(embedding)
         net.set_embedding(embedding)
 
     # configure training setting
@@ -191,6 +192,7 @@ def main(args):
 
 
 if __name__ == '__main__':
+
     parser = argparse.ArgumentParser(
         description='training of the feed-forward extractor (ff-ext, ML)'
     )

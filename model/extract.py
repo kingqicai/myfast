@@ -24,6 +24,7 @@ class ConvSentEncoder(nn.Module):
         self._grad_handle = None
 
     def forward(self, input_):
+        #print("conv-forward")
         emb_input = self._embedding(input_)
         conv_in = F.dropout(emb_input.transpose(1, 2),
                             self._dropout, training=self.training)
@@ -33,8 +34,6 @@ class ConvSentEncoder(nn.Module):
 
     def set_embedding(self, embedding):
         """embedding is the weight matrix"""
-        print(self._embedding.weight.size())
-        print(embedding.size())
         assert self._embedding.weight.size() == embedding.size()
         self._embedding.weight.data.copy_(embedding)
 
@@ -53,6 +52,7 @@ class LSTMEncoder(nn.Module):
 
     def forward(self, input_, in_lens=None):
         """ [batch_size, max_num_sent, input_dim] Tensor"""
+        #print('LstmEncoder for')
         size = (self._init_h.size(0), input_.size(0), self._init_h.size(1))
         init_states = (self._init_h.unsqueeze(1).expand(*size),
                        self._init_c.unsqueeze(1).expand(*size))
@@ -184,6 +184,7 @@ class LSTMPointerNet(nn.Module):
 
     def forward(self, attn_mem, mem_sizes, lstm_in):
         """atten_mem: Tensor of size [batch_size, max_sent_num, input_dim]"""
+        #print('LSTMPointerNet forward')
         attn_feat, hop_feat, lstm_states, init_i = self._prepare(attn_mem)
         lstm_in = torch.cat([init_i, lstm_in], dim=1).transpose(0, 1)
         query, final_states = self._lstm(lstm_in, lstm_states)
@@ -197,6 +198,7 @@ class LSTMPointerNet(nn.Module):
 
     def extract(self, attn_mem, mem_sizes, k):
         """extract k sentences, decode only, batch_size==1"""
+        #print("--LSTMPointerNet extract---")
         attn_feat, hop_feat, lstm_states, lstm_in = self._prepare(attn_mem)
         lstm_in = lstm_in.squeeze(1)
         if self._lstm_cell is None:
@@ -275,16 +277,21 @@ class PtrExtractSumm(nn.Module):
         )
 
     def forward(self, article_sents, sent_nums, target):
+        #print('PtrExtsumm forward')
         enc_out = self._encode(article_sents, sent_nums)
-        bs, nt = target.size()
-        d = enc_out.size(2)
+        bs, nt = target.size() #32 3
+        d = enc_out.size(2) #512
         ptr_in = torch.gather(
             enc_out, dim=1, index=target.unsqueeze(2).expand(bs, nt, d)
         )
+        #调用哪里
+        #print('----')
         output = self._extractor(enc_out, sent_nums, ptr_in)
+        #print('+++')
         return output
 
     def extract(self, article_sents, sent_nums=None, k=4):
+        print('PtrExtractSumm extract')
         enc_out = self._encode(article_sents, sent_nums)
         output = self._extractor.extract(enc_out, sent_nums, k)
         return output
