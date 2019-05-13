@@ -277,17 +277,15 @@ class PtrExtractSumm(nn.Module):
         )
 
     def forward(self, article_sents, sent_nums, target):
-        #print('PtrExtsumm forward')
         enc_out = self._encode(article_sents, sent_nums)
         bs, nt = target.size() #32 3
         d = enc_out.size(2) #512
         ptr_in = torch.gather(
             enc_out, dim=1, index=target.unsqueeze(2).expand(bs, nt, d)
         )
-        #调用哪里
-        #print('----')
+
+        #call LSTMPointerNet.forward(), 'enc_out,sent_nums, ptr_in' is forward real arguments
         output = self._extractor(enc_out, sent_nums, ptr_in)
-        #print('+++')
         return output
 
     def extract(self, article_sents, sent_nums=None, k=4):

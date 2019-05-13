@@ -93,39 +93,6 @@ and then run evaluation by:
 python eval_full_model.py --[rouge/meteor] --decode_dir=[path/to/save/decoded/files]
 ```
 
-### Results
-You should get the following results
-
-Validation set
-
-| Models             | ROUGEs (R-1, R-2, R-L) | METEOR |
-| ------------------ |:----------------------:| ------:|
-| **acl** |
-| rnn-ext + abs + RL | (41.01, 18.20, 38.57)  |  21.10 |
-| + rerank           | (41.74, 18.39, 39.40)  |  20.45 |
-| **new** |
-| rnn-ext + abs + RL | (41.23, 18.45, 38.71)  |  21.14 |
-| + rerank           | (42.06, 18.80, 39.68)  |  20.58 |
-
-Test set
-
-| Models             | ROUGEs (R-1, R-2, R-L) | METEOR |
-| ------------------ |:----------------------:| ------:|
-| **acl** |
-| rnn-ext + abs + RL | (40.03, 17.61, 37.58)  |  21.00 |
-| + rerank           | (40.88, 17.81, 38.53)  |  20.38 |
-| **new** |
-| rnn-ext + abs + RL | (40.41, 17.92, 37.87)  |  21.13 |
-| + rerank           | (41.20, 18.18, 38.79)  |  20.56 |
-
-**NOTE**:
-The original models in the paper are trained with pytorch 0.2.0 on python 2. 
-After the acceptance of the paper, we figured it is better for the community if
-we release the code with latest libraries so that it becomes easier to build new
-models/techniques on top of our work. 
-This results in a negligible difference w.r.t. our paper results when running the old pretrained model;
-and gives slightly better scores than our paper if running the new pretrained model.
-
 ## Train your own models
 Please follow the instructions
 *[here](https://github.com/ChenRocks/cnn-dailymail)*
